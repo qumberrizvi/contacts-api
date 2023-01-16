@@ -16,7 +16,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('', app, document, {
     customSiteTitle: 'Contacts APIs',
-    customCss: '.swagger-ui .topbar { display: none }',
   });
 
   await app.listen(3000);
