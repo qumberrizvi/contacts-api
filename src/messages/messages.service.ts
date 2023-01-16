@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from './entities/message.entity';
-import { IsNull, MongoRepository, Not } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { ObjectID } from 'mongodb';
 import { Contact } from '../contacts/entities/contact.entity';
 import { ConfigService } from '@nestjs/config';
@@ -35,17 +35,23 @@ export class MessagesService {
       body: createMessageDto.body,
     });
     const message = new Message();
-    message.contactId = new ObjectID(createMessageDto.contactId);
+    message.contactId = contact.id;
     message.otp = createMessageDto.otp;
     return await this.messageRepository.save(message);
   }
 
   async findAll(): Promise<Message[]> {
-    return await this.messageRepository.find({
+    const messages = await this.messageRepository.find({
       order: {
         createdAt: 'DESC',
       },
     });
+    for (const message of messages) {
+      message.contact = await this.contactRepository.findOneBy({
+        _id: new ObjectID(message.contactId),
+      });
+    }
+    return messages;
   }
 
   async findOne(id: string): Promise<Message> {

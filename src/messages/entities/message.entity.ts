@@ -5,6 +5,7 @@ import {
   ObjectID,
   ObjectIdColumn,
 } from 'typeorm';
+import { Contact } from '../../contacts/entities/contact.entity';
 
 @Entity()
 export class Message {
@@ -14,8 +15,10 @@ export class Message {
   @Column()
   otp: number;
 
-  @ObjectIdColumn({ nullable: false })
+  @ObjectIdColumn({ nullable: false, name: 'contactId' })
   contactId: ObjectID;
+
+  contact?: Contact;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
